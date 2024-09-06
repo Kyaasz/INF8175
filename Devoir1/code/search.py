@@ -100,6 +100,23 @@ def depthFirstSearch(problem:SearchProblem)->List[Direction]:
         INSÉREZ VOTRE SOLUTION À LA QUESTION 1 ICI
     '''
 
+    stack = util.Stack()
+    position = problem.getStartState()
+    directions = []
+    mem = []
+    
+    #while !problem.isGoalState(position):
+    for neighbours in problem.getSuccessors(position):
+        neighbours = neighbours + (position(0),)
+        "ajouter le parent dans le tuple?"
+        stack.push(neighbours)
+    
+    position = stack.pop()
+    directions.append(position[0])
+
+
+
+
     util.raiseNotDefined()
 
 
