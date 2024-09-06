@@ -101,18 +101,45 @@ def depthFirstSearch(problem:SearchProblem)->List[Direction]:
     '''
 
     stack = util.Stack()
-    position = problem.getStartState()
+    position = (problem.getStartState(), (0, 0))
     directions = []
     mem = []
+    nodeVisited = [(5, 4)]
     
-    #while !problem.isGoalState(position):
-    for neighbours in problem.getSuccessors(position):
-        neighbours = neighbours + (position(0),)
-        "ajouter le parent dans le tuple?"
-        stack.push(neighbours)
+    print("Start:", problem.getStartState())
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+
+    while problem.isGoalState(position[0]) == False :
+        for neighbour in problem.getSuccessors(position[0]):
+            if neighbour[0] in nodeVisited :
+                continue
+            else:
+                stack.push((neighbour, position[0]))
+        
+            
+        position = stack.pop() 
+        mem.append(position)
+        position = position[0]
+        nodeVisited.append(position[0])
+        #print(nodeVisited)
+    print("done")
+    print(position)
+   
+    posCoordo = position[0]
+    for node in reversed(mem):
+        print(node)
+        if node[0][0] == posCoordo:
+            directions.append(node[0][1])
+            posCoordo = node[1]
+        else: 
+            continue
+
     
-    position = stack.pop()
-    directions.append(position[0])
+    print("ici")
+    directions.reverse()
+    return directions
+
 
 
 
