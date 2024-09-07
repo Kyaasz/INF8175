@@ -104,45 +104,30 @@ def depthFirstSearch(problem:SearchProblem)->List[Direction]:
     position = (problem.getStartState(), (0, 0))
     directions = []
     mem = []
-    nodeVisited = [(5, 4)]
+    nodeVisited = []
     
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-
     while problem.isGoalState(position[0]) == False :
         for neighbour in problem.getSuccessors(position[0]):
             if neighbour[0] in nodeVisited :
                 continue
             else:
                 stack.push((neighbour, position[0]))
-        
             
         position = stack.pop() 
         mem.append(position)
         position = position[0]
         nodeVisited.append(position[0])
-        #print(nodeVisited)
-    print("done")
-    print(position)
    
     posCoordo = position[0]
     for node in reversed(mem):
-        print(node)
         if node[0][0] == posCoordo:
             directions.append(node[0][1])
             posCoordo = node[1]
         else: 
             continue
 
-    
-    print("ici")
     directions.reverse()
     return directions
-
-
-
-
 
     util.raiseNotDefined()
 
@@ -154,6 +139,34 @@ def breadthFirstSearch(problem:SearchProblem)->List[Direction]:
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 2 ICI
     '''
+    queue = util.Queue()
+    position = (problem.getStartState(), (0, 0))
+    directions = []
+    mem = []
+    nodeVisited = []
+    
+    while problem.isGoalState(position[0]) == False :
+        for neighbour in problem.getSuccessors(position[0]):
+            if neighbour[0] in nodeVisited :
+                continue
+            else:
+                queue.push((neighbour, position[0]))
+            
+        position = queue.pop() 
+        mem.append(position)
+        position = position[0]
+        nodeVisited.append(position[0])
+   
+    posCoordo = position[0]
+    for node in reversed(mem):
+        if node[0][0] == posCoordo:
+            directions.append(node[0][1])
+            posCoordo = node[1]
+        else: 
+            continue
+
+    directions.reverse()
+    return directions
 
     util.raiseNotDefined()
 
