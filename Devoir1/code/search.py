@@ -134,8 +134,6 @@ def depthFirstSearch(problem:SearchProblem)->List[Direction]:
 
 def breadthFirstSearch(problem:SearchProblem)->List[Direction]:
     """Search the shallowest nodes in the search tree first."""
-
-
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 2 ICI
     '''
@@ -155,7 +153,7 @@ def breadthFirstSearch(problem:SearchProblem)->List[Direction]:
         position = queue.pop()
         while position[0][0] in nodeVisited:
             position = queue.pop()
-            
+
         mem.append(position)
         position = position[0]
         nodeVisited.append(position[0])
