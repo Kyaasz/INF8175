@@ -143,7 +143,7 @@ def breadthFirstSearch(problem:SearchProblem)->List[Direction]:
     position = (problem.getStartState(), (0, 0))
     directions = []
     mem = []
-    nodeVisited = []
+    nodeVisited = [problem.getStartState()]
     
     while problem.isGoalState(position[0]) == False :
         for neighbour in problem.getSuccessors(position[0]):
@@ -151,12 +151,15 @@ def breadthFirstSearch(problem:SearchProblem)->List[Direction]:
                 continue
             else:
                 queue.push((neighbour, position[0]))
+        
+        position = queue.pop()
+        while position[0][0] in nodeVisited:
+            position = queue.pop()
             
-        position = queue.pop() 
         mem.append(position)
         position = position[0]
         nodeVisited.append(position[0])
-   
+
     posCoordo = position[0]
     for node in reversed(mem):
         if node[0][0] == posCoordo:
