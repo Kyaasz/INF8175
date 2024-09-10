@@ -99,8 +99,40 @@ def depthFirstSearch(problem:SearchProblem)->List[Direction]:
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 1 ICI
     '''
-
-    util.raiseNotDefined()
+    from game import Directions
+    start_state = problem.getStartState()
+    fringe = util.Stack()
+    fringe.push(start_state)
+    mem = [] # mémoire des états étendus
+    dico = dict() # dictionnaire contenant les parents et les directions
+    path = []
+    if problem.isGoalState(start_state):
+        return path
+    else:
+        while not fringe.isEmpty():
+            s = fringe.pop()
+            if s== start_state: 
+                pred_s = s
+            else:
+                pred_s = s[0]
+            if problem.isGoalState(pred_s): 
+                # reconstruire le chemin
+                current_s = s[0]
+                while current_s != start_state:
+                    path.append(dico[current_s][1])
+                    current_s = dico[current_s][0]
+                path.reverse()
+                return path
+            else:
+                temp = problem.getSuccessors(pred_s)
+                l = [x for x in temp if x[0] not in mem]
+                for x in l:
+                    # ajout dans la fringe des états
+                    fringe.push(x)
+                     # ajout de ces états dans le dictionnaire
+                    dico[x[0]] = (pred_s, x[1])
+                mem.append(pred_s)
+        return [] # pas de solution
 
 
 def breadthFirstSearch(problem:SearchProblem)->List[Direction]:
@@ -111,7 +143,44 @@ def breadthFirstSearch(problem:SearchProblem)->List[Direction]:
         INSÉREZ VOTRE SOLUTION À LA QUESTION 2 ICI
     '''
 
-    util.raiseNotDefined()
+    from game import Directions
+    start_state = problem.getStartState()
+    fringe = util.Queue()
+    fringe.push(start_state)
+    mem = [] # mémoire des états étendus
+    dico = dict() # dictionnaire contenant les parents et les directions
+    path = []
+    discovered_s = []
+    discovered_s.append(start_state)
+    if problem.isGoalState(start_state):
+        return path
+    else:
+        while not fringe.isEmpty():
+            s = fringe.pop()
+            if s== start_state: 
+                pred_s = s
+            else:
+                pred_s = s[0]
+            if problem.isGoalState(pred_s): 
+                # reconstruire le chemin
+                current_s = s[0]
+                while current_s != start_state:
+                    path.append(dico[current_s][1])
+                    current_s = dico[current_s][0]
+                path.reverse()
+                return path
+            else:
+                temp = problem.getSuccessors(pred_s)
+                l = [x for x in temp if x[0] not in discovered_s]
+                for x in l:
+                    # ajout dans la fringe des états
+                    fringe.push(x)
+                    # ajout de ces états dans le dictionnaire
+                    dico[x[0]] = (pred_s, x[1])
+                    discovered_s.append(x[0])
+
+                mem.append(pred_s)
+    return [] # pas de solution
 
 def uniformCostSearch(problem:SearchProblem)->List[Direction]:
     """Search the node of least total cost first."""
