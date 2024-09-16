@@ -179,7 +179,43 @@ def uniformCostSearch(problem:SearchProblem)->List[Direction]:
         INSÉREZ VOTRE SOLUTION À LA QUESTION 3 ICI
     '''
     
+    prioQueue = util.PriorityQueue()
+    position = (problem.getStartState(), (0, 0), 0)
+    directions = []
+    mem = []
+    nodeVisited = [problem.getStartState()]
 
+    while problem.isGoalState(position[0]) == False :
+        for neighbour in problem.getSuccessors(position[0]):
+            if neighbour[0] in nodeVisited :
+                continue
+            else:
+                #print(position)
+                cost = position[2] + neighbour[2]
+                #print(cost)
+                prioQueue.push((neighbour, position[0], cost), cost)
+                
+        
+        position = prioQueue.pop()
+        while position[0][0] in nodeVisited:
+            position = prioQueue.pop()
+
+        #print(position)
+        mem.append(position)
+        position = position[0]
+        #print(position)
+        nodeVisited.append(position[0])
+    
+    posCoordo = position[0]
+    for node in reversed(mem):
+        if node[0][0] == posCoordo:
+            directions.append(node[0][1])
+            posCoordo = node[1]
+        else: 
+            continue
+
+    directions.reverse()
+    return directions
 
 
     util.raiseNotDefined()
