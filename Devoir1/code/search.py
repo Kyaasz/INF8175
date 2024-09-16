@@ -178,6 +178,9 @@ def uniformCostSearch(problem:SearchProblem)->List[Direction]:
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 3 ICI
     '''
+    
+
+
 
     util.raiseNotDefined()
 
