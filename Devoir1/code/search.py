@@ -173,39 +173,35 @@ def breadthFirstSearch(problem:SearchProblem)->List[Direction]:
 
 def uniformCostSearch(problem:SearchProblem)->List[Direction]:
     """Search the node of least total cost first."""
-
-
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 3 ICI
     '''
     
     prioQueue = util.PriorityQueue()
-    position = (problem.getStartState(), (0, 0), 0)
+    position = (problem.getStartState(), (0, 0))
     directions = []
     mem = []
     nodeVisited = [problem.getStartState()]
-
+    cost = 0
+    
     while problem.isGoalState(position[0]) == False :
         for neighbour in problem.getSuccessors(position[0]):
             if neighbour[0] in nodeVisited :
                 continue
             else:
-                #print(position)
-                cost = position[2] + neighbour[2]
-                #print(cost)
-                prioQueue.push((neighbour, position[0], cost), cost)
-                
+                prioQueue.push((neighbour, position[0], cost + neighbour[2]), cost + neighbour)
         
         position = prioQueue.pop()
         while position[0][0] in nodeVisited:
             position = prioQueue.pop()
 
-        #print(position)
+
+        cost = position[2]
+        #print(cost)
         mem.append(position)
         position = position[0]
-        #print(position)
         nodeVisited.append(position[0])
-    
+
     posCoordo = position[0]
     for node in reversed(mem):
         if node[0][0] == posCoordo:
@@ -217,6 +213,7 @@ def uniformCostSearch(problem:SearchProblem)->List[Direction]:
     directions.reverse()
     return directions
 
+    
 
     util.raiseNotDefined()
 
