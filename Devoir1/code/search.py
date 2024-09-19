@@ -231,13 +231,49 @@ def nullHeuristic(state:GameState, problem:SearchProblem=None)->List[Direction]:
     """
     return 0
 
+
 def aStarSearch(problem:SearchProblem, heuristic=nullHeuristic)->List[Direction]:
     """Search the node that has the lowest combined cost and heuristic first."""
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 4 ICI
     '''
+    start_state = problem.getStartState()
+    fringe = util.PriorityQueue()
+    fringe.push(start_state, 0)
+    mem = []  # mémoire des états étendus
+    dico = dict() # dictionnaire contenant les parents et les directions
+    path = []
+    if problem.isGoalState(start_state):
+        return path
+    else:
+        while not fringe.isEmpty():
+            s = fringe.pop()
+            if s == start_state: 
+                current_cost = 0
+            else:
+                current_cost = dico[s][2] # cost
+            if problem.isGoalState(s): 
+                # reconstruire le chemin
+                current_s = s
+                while current_s != start_state:
+                    path.append(dico[current_s][1])
+                    current_s = dico[current_s][0]
+                path.reverse()
+                return path
+            else:
+                temp = problem.getSuccessors(s)
+                l = [x for x in temp if x[0] not in mem]
+                for x in l:
+                    real_cost = current_cost + x[2] 
+                    heuristic_cost = current_cost + x[2] + heuristic(x[0], problem)
+                    # ajout dans la fringe des états
+                    fringe.update(x[0], heuristic_cost)
+                    # ajout de ces états dans le dictionnaire
+                    if (not x[0] in dico) or (x[0] in dico and real_cost < dico[x[0]][2]) :
+                        dico[x[0]] = (s, x[1], real_cost)
 
-    util.raiseNotDefined()
+                mem.append(s)
+    return [] # pas de solution
 
 
 # Abbreviations

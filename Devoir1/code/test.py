@@ -1,2 +1,2 @@
-l = [1, 2, 4, 5]
-print(l.reverse())
+a = (0,1, 1)
+print(sum(a))

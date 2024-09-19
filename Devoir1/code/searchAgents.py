@@ -294,6 +294,7 @@ class CornersProblem(search.SearchProblem):
         '''
             INSÉREZ VOTRE SOLUTION À LA QUESTION 5 ICI
         '''
+        self.corners_state = (0,0,0,0)
 
 
     def getStartState(self):
@@ -305,8 +306,8 @@ class CornersProblem(search.SearchProblem):
         '''
             INSÉREZ VOTRE SOLUTION À LA QUESTION 5 ICI
         '''
-        
-        util.raiseNotDefined()
+        return (self.startingPosition, self.corners_state)
+
 
     def isGoalState(self, state):
         """
@@ -316,8 +317,13 @@ class CornersProblem(search.SearchProblem):
         '''
             INSÉREZ VOTRE SOLUTION À LA QUESTION 5 ICI
         '''
-
-        util.raiseNotDefined()
+        dico = state[1]
+        pos = state[0]
+        s = sum(dico)
+        if s == 3 and pos in self.corners and dico[self.corners.index(pos)] == False: 
+            return True
+        else:
+            return False
 
     def getSuccessors(self, state):
         """
@@ -342,6 +348,18 @@ class CornersProblem(search.SearchProblem):
             '''
                 INSÉREZ VOTRE SOLUTION À LA QUESTION 5 ICI
             '''
+            x,y = state[0]
+            dico = state[1]
+            if (x,y) in self.corners: 
+                l = list(dico)
+                l[self.corners.index((x,y))] = 1
+                dico = tuple(l)
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            if not self.walls[nextx][nexty]:
+                nextState0 = (nextx, nexty)
+                cost = 1
+                successors.append(((nextState0, dico), action, cost))
 
 
         self._expanded += 1 # DO NOT CHANGE
