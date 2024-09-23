@@ -397,6 +397,24 @@ def cornersHeuristic(state, problem):
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 6 ICI
     '''
+
+    #multiplier par 2
+    #print(walls[1])
+    print(walls.width)
+    print(walls.height)
+    print(state)
+    
+    topRight = (walls.width - 2, walls.height - 2)
+    topLeft = (1, walls.height - 2)
+    botRight = (walls.width - 2, 1)
+    botLeft = (1, 1)
+
+    
+    #return 
+
+    
+
+
     
     return 0
 
