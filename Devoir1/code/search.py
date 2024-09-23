@@ -189,7 +189,7 @@ def uniformCostSearch(problem:SearchProblem)->List[Direction]:
             if neighbour[0] in nodeVisited :
                 continue
             else:
-                prioQueue.push((neighbour, position[0], cost + neighbour[2]), cost + neighbour)
+                prioQueue.push((neighbour, position[0], cost + neighbour[2]), cost + neighbour[2])
         
         position = prioQueue.pop()
         while position[0][0] in nodeVisited:
@@ -229,6 +229,8 @@ def aStarSearch(problem:SearchProblem, heuristic=nullHeuristic)->List[Direction]
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 4 ICI
     '''
+
+    
 
     util.raiseNotDefined()
 
