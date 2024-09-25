@@ -378,6 +378,7 @@ class CornersProblem(search.SearchProblem):
             if self.walls[x][y]: return 999999
         return len(actions)
 
+
 def cornersHeuristic(state, problem):
     """
     A heuristic for the CornersProblem that you defined.
@@ -397,8 +398,20 @@ def cornersHeuristic(state, problem):
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 6 ICI
     '''
-    
-    return 0
+    pos = state[0]
+    dico = state[1]
+    n_corners = len(corners) # number of corners
+    corners_distance = [0]*n_corners ## tableau contenant la distance estimée entre la position et chacun des coins.
+                            # Il contient -1 si le coin a déjà été visité
+    for k in range(n_corners):
+        if dico[k] == 1: ## Le coin a été visité
+            corners_distance[k] = -1
+        else:
+            corners_distance[k] = util.manhattanDistance(pos, corners[k])
+    pos_distance = [x for x in corners_distance if x>=0]
+    max_dis = max(pos_distance)
+
+    return  max_dis
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"

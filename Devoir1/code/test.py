@@ -1,2 +1,3 @@
-a = (0,1, 1)
-print(sum(a))
+a = [0,0,0]
+a = a+1
+print(a)
