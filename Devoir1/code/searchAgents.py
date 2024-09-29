@@ -508,7 +508,20 @@ def foodHeuristic(state, problem: FoodSearchProblem):
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 7 ICI
     '''
+    import numpy as np
+    m = foodGrid.width
+    n = foodGrid.height # number of corners
 
+    corners_distance = [] ## tableau contenant la distance estimée entre la position et chacun des coins.
+                            # Il contient -1 si le coin a déjà été visité
+                            
+    l = foodGrid.asList()
+    if l == []:
+        return 0
+    else:
+        for x in l:
+            corners_distance.append(util.manhattanDistance(position, x))
 
-    return 0
+        max_dis = max(corners_distance)
+        return max_dis
 
