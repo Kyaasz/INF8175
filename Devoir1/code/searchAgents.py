@@ -397,8 +397,56 @@ def cornersHeuristic(state, problem):
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 6 ICI
     '''
+    import math
+    import sys
+
+    # botLeft = corners[0]
+    # topLeft = corners[1]
+    # botRight = corners[2]
+    # topRight = corners[3]
+    # print("hauteur", walls.height)
+    # print("largeur",walls.width)
+    toVisit = []
+    closestNode = (sys.maxsize,sys.maxsize)
+
+    for i in range(4):
+        if state[1][i] == 0:
+            toVisit.append(i)
+            dist = (math.floor(math.dist(state[0], corners[i])))
+            if dist < closestNode[1]:
+                closestNode = (i, dist)
+        else:
+            continue
     
-    return 0
+    toVisit.remove(closestNode[0])
+    print(closestNode)
+
+
+    if (sum(state[1]) == 0):
+        # print(closestNode[1] + (2*(walls.height-2)) + (walls.width-2))
+        # print(closestNode[1])
+        #print(state[1])
+        #print("4 coins restants, ", state[0],", coût estimé : ", closestNode[1] + (2*(walls.height-2)) + (walls.width-2))
+        #return closestNode[1]
+        return (closestNode[1] + (2*(walls.height)) + (walls.width))
+    
+    elif (sum(state[1]) == 1):
+        dist = (math.floor(math.dist(corners[toVisit[0]], corners[toVisit[1]])))
+        #print(closestNode[1] + walls.height-2 + dist)
+        #print("3 coins restants, ", state[0],", coût estimé : ", closestNode[1] + walls.height-2 + dist, " dist : ", dist, " corners : ", corners[toVisit[0]], corners[toVisit[1]])
+        return (closestNode[1] + walls.height + dist)
+    
+    elif (sum(state[1]) == 2):
+        #print(state[0])
+        #print(closestNode[1] + (math.floor(math.dist(corners[toVisit[0]], corners[closestNode[0]]))))
+        #print("2 coins restants, ", state[0],", coût estimé : ", closestNode[1] + (math.floor(math.dist(corners[toVisit[0]], corners[closestNode[0]]))))
+        return (closestNode[1] + (math.floor(math.dist(corners[toVisit[0]], corners[closestNode[0]]))))
+    
+    else:
+        #print(state[0])
+        #print(closestNode[1])
+        #print("1 coins restants, ", state[0],", coût estimé : ", (closestNode[1]))
+        return (closestNode[1])
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
