@@ -501,7 +501,7 @@ def foodHeuristic(state, problem: FoodSearchProblem):
     use. For example, if you only want to count the walls once and store that
     value, try: problem.heuristicInfo['wallCount'] = problem.walls.count()
     Subsequent calls to this heuristic can access
-    problem.heuristicInfo['wallCount']
+    problem.heuristicInfo['wallCount']#
     """
     position, foodGrid = state
 
@@ -509,6 +509,7 @@ def foodHeuristic(state, problem: FoodSearchProblem):
         INSÉREZ VOTRE SOLUTION À LA QUESTION 7 ICI
     '''
     import numpy as np
+    import sys 
     m = foodGrid.width
     n = foodGrid.height # number of corners
 
@@ -516,12 +517,20 @@ def foodHeuristic(state, problem: FoodSearchProblem):
                             # Il contient -1 si le coin a déjà été visité
                             
     l = foodGrid.asList()
-    if l == []:
-        return 0
-    else:
-        for x in l:
-            corners_distance.append(util.manhattanDistance(position, x))
 
-        max_dis = max(corners_distance)
-        return max_dis
+    while len(l) != 0:
+        dist = sys.maxsize
+        for food in l:
+            if dist >
+            dist = util.manhattanDistance(position, food)
+
+
+    # if l == []:
+    #     return 0
+    # else:
+    #     for x in l:
+    #         corners_distance.append(util.manhattanDistance(position, x))
+
+    #     max_dis = max(corners_distance)
+    #     return max_dis
 
