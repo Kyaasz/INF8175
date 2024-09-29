@@ -102,7 +102,7 @@ def depthFirstSearch(problem:SearchProblem)->List[Direction]:
     start_state = problem.getStartState()
     fringe = util.Stack()
     fringe.push(start_state)
-    mem = [] # mémoire des états étendus
+    mem = set() # mémoire des états étendus
     dico = dict() # dictionnaire contenant les parents et les directions
     path = []
     if problem.isGoalState(start_state):
@@ -130,7 +130,7 @@ def depthFirstSearch(problem:SearchProblem)->List[Direction]:
                     fringe.push(x)
                      # ajout de ces états dans le dictionnaire
                     dico[x[0]] = (pred_s, x[1])
-                mem.append(pred_s)
+                mem.add(pred_s)
         return [] # pas de solution
 
 
@@ -144,7 +144,7 @@ def breadthFirstSearch(problem:SearchProblem)->List[Direction]:
     start_state = problem.getStartState()
     fringe = util.Queue()
     fringe.push(start_state)
-    mem = [] # mémoire des états étendus
+    mem = set() # mémoire des états étendus
     dico = dict() # dictionnaire contenant les parents et les directions
     path = []
     discovered_s = []
@@ -176,7 +176,7 @@ def breadthFirstSearch(problem:SearchProblem)->List[Direction]:
                     dico[x[0]] = (pred_s, x[1])
                     discovered_s.append(x[0])
 
-                mem.append(pred_s)
+                mem.add(pred_s)
     return [] # pas de solution
 
 def uniformCostSearch(problem:SearchProblem)->List[Direction]:
@@ -189,7 +189,7 @@ def uniformCostSearch(problem:SearchProblem)->List[Direction]:
     start_state = problem.getStartState()
     fringe = util.PriorityQueue()
     fringe.push(start_state, 0)
-    mem = []  # mémoire des états étendus
+    mem = set()  # mémoire des états étendus
     dico = dict() # dictionnaire contenant les parents et les directions
     path = []
     if problem.isGoalState(start_state):
@@ -220,7 +220,7 @@ def uniformCostSearch(problem:SearchProblem)->List[Direction]:
                     if (not x[0] in dico) or (x[0] in dico and real_cost < dico[x[0]][2]) :
                         dico[x[0]] = (s, x[1], real_cost)
 
-                mem.append(s)
+                mem.add(s)
     return [] # pas de solution
 
 
@@ -240,7 +240,7 @@ def aStarSearch(problem:SearchProblem, heuristic=nullHeuristic)->List[Direction]
     start_state = problem.getStartState()
     fringe = util.PriorityQueue()
     fringe.push(start_state, 0)
-    mem = []  # mémoire des états étendus
+    mem = set()  # mémoire des états étendus
     dico = dict() # dictionnaire contenant les parents et les directions
     path = []
     if problem.isGoalState(start_state):
@@ -272,7 +272,7 @@ def aStarSearch(problem:SearchProblem, heuristic=nullHeuristic)->List[Direction]
                     if (not x[0] in dico) or (x[0] in dico and real_cost < dico[x[0]][2]) :
                         dico[x[0]] = (s, x[1], real_cost)
 
-                mem.append(s)
+                mem.add(s)
     return [] # pas de solution
 
 

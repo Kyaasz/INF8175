@@ -508,37 +508,11 @@ def foodHeuristic(state, problem: FoodSearchProblem):
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 7 ICI
     '''
-    import numpy as np
     import sys 
-    m = foodGrid.width
-    n = foodGrid.height # number of corners
-
-    corners_distance = [] ## tableau contenant la distance estimée entre la position et chacun des coins.
-                            # Il contient -1 si le coin a déjà été visité
                             
     foodCoordoList = foodGrid.asList()
-    # posRecherche = position
-    # totalDist = 0
-
-    # while len(foodCoordoList) != 0:
-    #     minDist = sys.maxsize
-    #     closestFoodCoordo = (sys.maxsize, sys.maxsize)
-
-    #     for foodCoord in foodCoordoList:
-    #         manDist = util.manhattanDistance(posRecherche, foodCoord)
-    #         if manDist <= minDist:
-    #             minDist = manDist
-    #             closestFoodCoordo = foodCoord 
-
-    #     totalDist += minDist 
-    #     foodCoordoList.remove(closestFoodCoordo)
-    #     posRecherche = closestFoodCoordo
-    
-    #return totalDist
-    
-    #print("FOODGRID START\n",foodGrid[0],"\nFOODGRIDEND \n")
     distance = 0
-    mincoordo = (0,0)
+    minCoordo = (0,0)
     minDist = sys.maxsize
 
 
@@ -549,14 +523,14 @@ def foodHeuristic(state, problem: FoodSearchProblem):
             disman = (util.manhattanDistance(position, food))
             if disman < minDist:
                 minDist = disman
-                mincoordo = food
+                minCoordo = food
 
 
         for food in foodCoordoList:
-            distanceMan = util.manhattanDistance(mincoordo, food)
+            distanceMan = util.manhattanDistance(minCoordo, food)
             if distanceMan > distance:
                 distance = distanceMan
-        
+
         return minDist + distance
     
     
