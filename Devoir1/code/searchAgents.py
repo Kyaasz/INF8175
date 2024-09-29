@@ -517,94 +517,48 @@ def foodHeuristic(state, problem: FoodSearchProblem):
                             # Il contient -1 si le coin a déjà été visité
                             
     foodCoordoList = foodGrid.asList()
-    posRecherche = position
-    totalDist = 0
+    # posRecherche = position
+    # totalDist = 0
 
-    while len(foodCoordoList) != 0:
-        minDist = sys.maxsize
-        minDist2 = sys.maxsize
-        closestFoodCoordo = (sys.maxsize, sys.maxsize)
-        closestFoodCoordo2 = (sys.maxsize, sys.maxsize)
+    # while len(foodCoordoList) != 0:
+    #     minDist = sys.maxsize
+    #     closestFoodCoordo = (sys.maxsize, sys.maxsize)
 
-        for foodCoord in foodCoordoList:
-            manDist = util.manhattanDistance(posRecherche, foodCoord)
+    #     for foodCoord in foodCoordoList:
+    #         manDist = util.manhattanDistance(posRecherche, foodCoord)
+    #         if manDist <= minDist:
+    #             minDist = manDist
+    #             closestFoodCoordo = foodCoord 
 
-            if manDist <= minDist:
-                minDist2 = minDist
-                minDist = manDist
-                closestFoodCoordo2 = closestFoodCoordo
-                closestFoodCoordo = foodCoord
-            if (minDist < manDist) and (manDist < minDist2):
-                minDist2 = manDist
-                closestFoodCoordo2 = foodCoord
-
-        if len(foodCoordoList) == 2:
-            # print("ici")
-            # print(closestFoodCoordo, closestFoodCoordo2)
-            # print(util.manhattanDistance(closestFoodCoordo, closestFoodCoordo2) + minDist)
-            foodCoordoList.remove(closestFoodCoordo)
-            foodCoordoList.remove(closestFoodCoordo2)
-            return util.manhattanDistance(closestFoodCoordo, closestFoodCoordo2) + minDist
-
-        elif len(foodCoordoList) == 1:
-            foodCoordoList.remove(closestFoodCoordo)
-            return minDist
-        
-        else :
-            foodCoordoList.remove(closestFoodCoordo)
-            foodCoordoList.remove(closestFoodCoordo2)
-            closestCoordoOption1 = (sys.maxsize, sys.maxsize)
-            closestCoordoOption2 = (sys.maxsize, sys.maxsize)
-
-            minDistOption1 = sys.maxsize
-            minDistOption2 = sys.maxsize
-
-            for foodCoord in foodCoordoList:
-                manDist = util.manhattanDistance(closestFoodCoordo2, foodCoord)
-
-                if manDist < minDistOption1:
-                    minDistOption1 = manDist
-                    closestCoordoOption1 = foodCoord
-        
-            for foodCoord in foodCoordoList:
-                manDist = util.manhattanDistance(closestFoodCoordo, foodCoord)
-
-                if manDist < minDistOption2:
-                    minDistOption2 = manDist
-                    closestCoordoOption2 = foodCoord
-           
-
-            distOption1 = minDist + util.manhattanDistance(closestFoodCoordo, closestFoodCoordo2) + minDistOption1
-            distOption2 = minDist2 + util.manhattanDistance(closestFoodCoordo2, closestFoodCoordo) + minDistOption2
-
-
-            if distOption1 < distOption2:
-                totalDist += distOption1
-                foodCoordoList.remove(closestCoordoOption1)
-                posRecherche = closestCoordoOption1
-
-            else:
-                totalDist += distOption2
-                foodCoordoList.remove(closestCoordoOption2)
-                posRecherche = closestCoordoOption2
-
-            
-
-
-           
-        
-        # totalDist += minDist
-        # foodCoordoList.remove(closestFoodCoordo)
-        # posRecherche = closestFoodCoordo
+    #     totalDist += minDist 
+    #     foodCoordoList.remove(closestFoodCoordo)
+    #     posRecherche = closestFoodCoordo
     
-    return totalDist
+    #return totalDist
+    
+    #print("FOODGRID START\n",foodGrid[0],"\nFOODGRIDEND \n")
+    distance = 0
+    mincoordo = (0,0)
+    minDist = sys.maxsize
 
-    # if l == []:
-    #     return 0
-    # else:
-    #     for x in l:
-    #         corners_distance.append(util.manhattanDistance(position, x))
 
-    #     max_dis = max(corners_distance)
-    #     return max_dis
+    if foodCoordoList == []:
+        return 0
+    else:
+        for food in foodCoordoList:
+            disman = (util.manhattanDistance(position, food))
+            if disman < minDist:
+                minDist = disman
+                mincoordo = food
 
+
+        for food in foodCoordoList:
+            distanceMan = util.manhattanDistance(mincoordo, food)
+            if distanceMan > distance:
+                distance = distanceMan
+        
+        return minDist + distance
+    
+    
+
+    
