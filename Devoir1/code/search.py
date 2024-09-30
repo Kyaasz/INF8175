@@ -99,39 +99,37 @@ def depthFirstSearch(problem:SearchProblem)->List[Direction]:
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 1 ICI
     '''
-    start_state = problem.getStartState()
+    start_state = (problem.getStartState(), 0) #Ajout d'un placeholder pour la direction
     fringe = util.Stack()
     fringe.push(start_state)
     mem = set() # mémoire des états étendus
     dico = dict() # dictionnaire contenant les parents et les directions
-    path = []
-    if problem.isGoalState(start_state):
-        return path
-    else:
-        while not fringe.isEmpty():
-            s = fringe.pop()
-            if s== start_state: 
-                pred_s = s
-            else:
-                pred_s = s[0]
-            if problem.isGoalState(pred_s): 
-                # reconstruire le chemin
-                current_s = s[0]
-                while current_s != start_state:
-                    path.append(dico[current_s][1])
-                    current_s = dico[current_s][0]
-                path.reverse()
-                return path
-            else:
-                temp = problem.getSuccessors(pred_s)
-                l = [x for x in temp if x[0] not in mem]
-                for x in l:
-                    # ajout dans la fringe des états
-                    fringe.push(x)
-                     # ajout de ces états dans le dictionnaire
-                    dico[x[0]] = (pred_s, x[1])
-                mem.add(pred_s)
-        return [] # pas de solution
+    path = [] #chemin qui sera retourné
+
+    while not fringe.isEmpty():
+        current_s = fringe.pop()[0] #Récupération du nouvel état à étendre
+
+        if problem.isGoalState(current_s): #cas où on est à l'état final
+            # reconstruction du chemin
+            temp_s = current_s
+            while temp_s != start_state[0]:
+                path.append(dico[temp_s][1])
+                temp_s = dico[temp_s][0]
+            path.reverse()
+            return path
+        
+        #Traitement des successors, ajout s'ils ne sont pas déjà dans la mem
+        else:
+            temp = problem.getSuccessors(current_s)
+            successorsNotVisited = [x for x in temp if x[0] not in mem] #on retire les successors déjà étendus
+            for x in successorsNotVisited:
+                # ajout dans la fringe des états
+                fringe.push(x)
+                # ajout de ces états dans le dictionnaire
+                dico[x[0]] = (current_s, x[1])
+            mem.add(current_s) #on ajoute l'état étendu à la mémoire
+
+    return [] # pas de solution
 
 
 def breadthFirstSearch(problem:SearchProblem)->List[Direction]:
@@ -139,42 +137,40 @@ def breadthFirstSearch(problem:SearchProblem)->List[Direction]:
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 2 ICI
     '''
-    start_state = problem.getStartState()
+    start_state = (problem.getStartState(), 0)
     fringe = util.Queue()
     fringe.push(start_state)
     mem = set() # mémoire des états étendus
     dico = dict() # dictionnaire contenant les parents et les directions
     path = []
-    discovered_s = []
-    discovered_s.append(start_state)
-    if problem.isGoalState(start_state):
-        return path
-    else:
-        while not fringe.isEmpty():
-            s = fringe.pop()
-            if s== start_state: 
-                pred_s = s
-            else:
-                pred_s = s[0]
-            if problem.isGoalState(pred_s): 
-                # reconstruire le chemin
-                current_s = s[0]
-                while current_s != start_state:
-                    path.append(dico[current_s][1])
-                    current_s = dico[current_s][0]
-                path.reverse()
-                return path
-            else:
-                temp = problem.getSuccessors(pred_s)
-                l = [x for x in temp if x[0] not in discovered_s]
-                for x in l:
-                    # ajout dans la fringe des états
-                    fringe.push(x)
-                    # ajout de ces états dans le dictionnaire
-                    dico[x[0]] = (pred_s, x[1])
-                    discovered_s.append(x[0])
+    discovered_s = set() #ensemble des états déjà empilés ou visités
+    discovered_s.add(start_state[0])
+    
+    while not fringe.isEmpty():
+        current_s = fringe.pop()[0] #Récupération du nouvel état à étendre
+       
+        if problem.isGoalState(current_s): #cas où on est à l'état final
+            # reconstruction du chemin
+            temp_s = current_s
+            while temp_s != start_state[0]:
+                path.append(dico[temp_s][1])
+                temp_s = dico[temp_s][0]
 
-                mem.add(pred_s)
+            path.reverse()
+            return path
+        
+        #Traitement des successors, ajout s'ils ne sont pas déjà rencontrés        
+        else:
+            temp = problem.getSuccessors(current_s)
+            successorsNotVisited = [x for x in temp if x[0] not in discovered_s] #on retire les successors déjà rencontrés
+            for x in successorsNotVisited:
+                # ajout dans la fringe des états
+                fringe.push(x)
+                # ajout de ces états dans le dictionnaire
+                dico[x[0]] = (current_s, x[1])
+                discovered_s.add(x[0])
+            mem.add(current_s)
+
     return [] # pas de solution
 
 def uniformCostSearch(problem:SearchProblem)->List[Direction]:
@@ -190,35 +186,40 @@ def uniformCostSearch(problem:SearchProblem)->List[Direction]:
     mem = set()  # mémoire des états étendus
     dico = dict() # dictionnaire contenant les parents et les directions
     path = []
-    if problem.isGoalState(start_state):
-        return path
-    else:
-        while not fringe.isEmpty():
-            s = fringe.pop()
-            if s == start_state: 
-                current_cost = 0
-            else:
-                current_cost = dico[s][2] # cost
-            if problem.isGoalState(s): 
-                # reconstruire le chemin
-                current_s = s
-                while current_s != start_state:
-                    path.append(dico[current_s][1])
-                    current_s = dico[current_s][0]
-                path.reverse()
-                return path
-            else:
-                temp = problem.getSuccessors(s)
-                l = [x for x in temp if x[0] not in mem]
-                for x in l:
-                    real_cost = current_cost + x[2]
-                    # ajout dans la fringe des états
-                    fringe.update(x[0], real_cost)
-                    # ajout de ces états dans le dictionnaire
-                    if (not x[0] in dico) or (x[0] in dico and real_cost < dico[x[0]][2]) :
-                        dico[x[0]] = (s, x[1], real_cost)
+    
+    while not fringe.isEmpty():
+        current_s = fringe.pop() #Récupération du nouvel état à étendre
 
-                mem.add(s)
+        #Assignation du coût jusqu'à l'état courant
+        if current_s == start_state: 
+            current_cost = 0
+        else:
+            current_cost = dico[current_s][2] # cost
+
+        if problem.isGoalState(current_s): #cas où on est à l'état final
+            # reconstruction du chemin
+            temp_s = current_s
+            while temp_s != start_state:
+                path.append(dico[temp_s][1])
+                temp_s = dico[temp_s][0]
+
+            path.reverse()
+            return path
+        
+        #Traitement des successors, ajout s'ils ne sont pas déjà rencontrés        
+        else:
+            temp = problem.getSuccessors(current_s)
+            successorsNotVisited = [x for x in temp if x[0] not in mem]
+            for x in successorsNotVisited:
+                #mise à jour du coût
+                updated_cost = current_cost + x[2]
+                # ajout dans la fringe des états
+                fringe.update(x[0], updated_cost)
+                # ajout de ces états dans le dictionnaire
+                if (not x[0] in dico) or (x[0] in dico and updated_cost < dico[x[0]][2]) :
+                    dico[x[0]] = (current_s, x[1], updated_cost)
+
+            mem.add(current_s)
     return [] # pas de solution
 
 
@@ -241,36 +242,41 @@ def aStarSearch(problem:SearchProblem, heuristic=nullHeuristic)->List[Direction]
     mem = set()  # mémoire des états étendus
     dico = dict() # dictionnaire contenant les parents et les directions
     path = []
-    if problem.isGoalState(start_state):
-        return path
-    else:
-        while not fringe.isEmpty():
-            s = fringe.pop()
-            if s == start_state: 
-                current_cost = 0
-            else:
-                current_cost = dico[s][2] # cost
-            if problem.isGoalState(s): 
-                # reconstruire le chemin
-                current_s = s
-                while current_s != start_state:
-                    path.append(dico[current_s][1])
-                    current_s = dico[current_s][0]
-                path.reverse()
-                return path
-            else:
-                temp = problem.getSuccessors(s)
-                l = [x for x in temp if x[0] not in mem]
-                for x in l:
-                    real_cost = current_cost + x[2] 
-                    heuristic_cost = current_cost + x[2] + heuristic(x[0], problem)
-                    # ajout dans la fringe des états
-                    fringe.update(x[0], heuristic_cost)
-                    # ajout de ces états dans le dictionnaire
-                    if (not x[0] in dico) or (x[0] in dico and real_cost < dico[x[0]][2]) :
-                        dico[x[0]] = (s, x[1], real_cost)
+    
+    
+    while not fringe.isEmpty():
+        current_s = fringe.pop() #Récupération du nouvel état à étendre
 
-                mem.add(s)
+        #Assignation du coût jusqu'à l'état courant
+        if current_s == start_state: 
+            current_cost = 0
+        else:
+            current_cost = dico[current_s][2] # cost
+
+        if problem.isGoalState(current_s): 
+            # reconstruction du chemin
+            temp_s = current_s
+            while temp_s != start_state:
+                path.append(dico[temp_s][1])
+                temp_s = dico[temp_s][0]
+
+            path.reverse()
+            return path
+        
+        #Traitement des successors, ajout s'ils ne sont pas déjà rencontrés        
+        else:
+            temp = problem.getSuccessors(current_s)
+            successorsNotVisited = [x for x in temp if x[0] not in mem]
+            for x in successorsNotVisited:
+                updated_cost = current_cost + x[2] 
+                heuristic_cost = updated_cost + heuristic(x[0], problem)
+                # ajout dans la fringe des états
+                fringe.update(x[0], heuristic_cost)
+                # ajout de ces états dans le dictionnaire
+                if (not x[0] in dico) or (x[0] in dico and updated_cost < dico[x[0]][2]) :
+                    dico[x[0]] = (current_s, x[1], updated_cost)
+
+            mem.add(current_s)
     return [] # pas de solution
 
 
