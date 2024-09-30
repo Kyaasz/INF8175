@@ -403,7 +403,10 @@ def cornersHeuristic(state, problem):
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 6 ICI
     '''
-    #
+    # On propose ici comme heuristique de renvoyer la distance de Manhattan maximale entre la position actuelle de Pacman et les 
+    # différents corners qui n'ont pas été encore visités. L'idée étant d'estimer la distance entre la position actuelle et l'arrivée 
+    # sur un état final. Cette estimation est donc réalisée en calculant la distance entre pacman et le coin le plus éloigné 
+    # (selon la distance de Manhattan)
 
     pos = state[0]
     cornerState = state[1]
@@ -520,24 +523,31 @@ def foodHeuristic(state, problem: FoodSearchProblem):
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 7 ICI
     '''
+    # Cette heuristique calcule la distance entre pacman et le rond jaune le plus proche de lui. Il y ajoute la distance entre ce rond jaune et le
+    # rond jaune qui est le plus éloigné de celui-ci. On retourne donc la somme de ces deux distances, afin de donner une estimation du coût pour
+    # se rendre à un état final. Étant donné qu'il y a plus de points à manger, au lieu de simplement tenir compte du point le plus éloigné de pacman, 
+    # nous avons précisé notre heuristique en calculant dans un premier temps la distance entre pacman et le point le plus proche, puis en calculant
+    # la distance entre ce point et le point le plus éloigné de ce dernier. 
+
     import sys 
                             
-    foodCoordoList = foodGrid.asList()
-    distance = 0
-    minCoordo = (0,0)
-    minDist = sys.maxsize
-
+    foodCoordoList = foodGrid.asList() #récupérer les coordonnées des ronds jaunes
+    distance = 0 
+    minCoordo = (-1,-1) #coordonnée du rond jaune le plus proche de pacman
+    minDist = sys.maxsize #placeholder pour plus petite distance entre un rond jaune et pacman
 
     if foodCoordoList == []:
         return 0
+    
     else:
+        #permet de trouver le rond jaune le plus proche de pacman. Stocke la distance et les coordonnées
         for food in foodCoordoList:
             disman = (util.manhattanDistance(position, food))
             if disman < minDist:
                 minDist = disman
                 minCoordo = food
 
-
+        #permet de trouver le rond jaune le plus éloigné du rond jaune identifié plus tôt
         for food in foodCoordoList:
             distanceMan = util.manhattanDistance(minCoordo, food)
             if distanceMan > distance:
