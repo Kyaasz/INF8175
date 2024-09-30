@@ -294,6 +294,8 @@ class CornersProblem(search.SearchProblem):
         '''
             INSÉREZ VOTRE SOLUTION À LA QUESTION 5 ICI
         '''
+        
+        #tuple indiquant l'état des coins (mangés = 1 ou non = 0)
         self.corners_state = (0,0,0,0)
 
 
@@ -306,6 +308,7 @@ class CornersProblem(search.SearchProblem):
         '''
             INSÉREZ VOTRE SOLUTION À LA QUESTION 5 ICI
         '''
+        
         return (self.startingPosition, self.corners_state)
 
 
@@ -317,13 +320,12 @@ class CornersProblem(search.SearchProblem):
         '''
             INSÉREZ VOTRE SOLUTION À LA QUESTION 5 ICI
         '''
-        dico = state[1]
+        cornerState = state[1]
         pos = state[0]
-        s = sum(dico)
-        if s == 3 and pos in self.corners and dico[self.corners.index(pos)] == False: 
-            return True
-        else:
-            return False
+        eatenCorners = sum(cornerState)
+
+        #un état est final si la position actuelle est à un corner et que les 3 autres corners ont été mangés
+        return (eatenCorners == 3 and pos in self.corners and cornerState[self.corners.index(pos)] == False)
 
     def getSuccessors(self, state):
         """
@@ -348,18 +350,21 @@ class CornersProblem(search.SearchProblem):
             '''
                 INSÉREZ VOTRE SOLUTION À LA QUESTION 5 ICI
             '''
-            x,y = state[0]
-            dico = state[1]
+            x,y = state[0] 
+            cornerState = state[1]
+
+            #mise à jour de l'état des corners
             if (x,y) in self.corners: 
-                l = list(dico)
-                l[self.corners.index((x,y))] = 1
-                dico = tuple(l)
+                l = list(cornerState)
+                l[self.corners.index((x,y))] = 1 
+                cornerState = tuple(l)
+
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             if not self.walls[nextx][nexty]:
-                nextState0 = (nextx, nexty)
+                nextPosition = (nextx, nexty)
                 cost = 1
-                successors.append(((nextState0, dico), action, cost))
+                successors.append(((nextPosition, cornerState), action, cost))
 
 
         self._expanded += 1 # DO NOT CHANGE
@@ -398,16 +403,23 @@ def cornersHeuristic(state, problem):
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 6 ICI
     '''
+    #
+
     pos = state[0]
-    dico = state[1]
+    cornerState = state[1]
     n_corners = len(corners) # number of corners
-    corners_distance = [0]*n_corners ## tableau contenant la distance estimée entre la position et chacun des coins.
-                            # Il contient -1 si le coin a déjà été visité
+
+    corners_distance = [0]*n_corners # tableau contenant la distance estimée entre la position et chacun des coins.
+                                     # Il contient -1 si le coin a déjà été visité
+    
+    #On parcourt chaque corner 
     for k in range(n_corners):
-        if dico[k] == 1: ## Le coin a été visité
+        if cornerState[k] == 1: ## Le coin a été visité
             corners_distance[k] = -1
         else:
             corners_distance[k] = util.manhattanDistance(pos, corners[k])
+
+    #on retire les valeurs de -1 des coins déjà mangés 
     pos_distance = [x for x in corners_distance if x>=0]
     max_dis = max(pos_distance)
 
