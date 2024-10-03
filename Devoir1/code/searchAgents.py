@@ -11,7 +11,7 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
+## Lab 1 : Juliette Mathivet 2077885, Yassine Mehmouden 2412865
 """
 This file contains all of the agents that can be selected to control Pacman.  To
 select an agent, use the '-p' option when running pacman.py.  Arguments can be
@@ -523,29 +523,44 @@ def foodHeuristic(state, problem: FoodSearchProblem):
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 7 ICI
     '''
-    # Cette heuristique calcule la distance entre pacman et le rond jaune le plus proche de lui. Il y ajoute la distance entre ce rond jaune et le
+    # Pour cette dernière question, nous avons fait le choix de combiner deux heuristiques, et ainsi retourner le maximum des deux heuristiques
+    # à chaque appel.
+
+    # La première calcule la distance entre pacman et le rond jaune le plus proche de lui. Elle y ajoute la distance entre ce rond jaune et le
     # rond jaune qui est le plus éloigné de celui-ci. On retourne donc la somme de ces deux distances, afin de donner une estimation du coût pour
-    # se rendre à un état final. Étant donné qu'il y a plus de points à manger, au lieu de simplement tenir compte du point le plus éloigné de pacman, 
+    # se rendre à un état final. Étant donné qu'il n'y a plus de points à manger, au lieu de simplement tenir compte du point le plus éloigné de pacman, 
     # nous avons précisé notre heuristique en calculant dans un premier temps la distance entre pacman et le point le plus proche, puis en calculant
     # la distance entre ce point et le point le plus éloigné de ce dernier. 
 
+    # La deuxième heuristique se base plus sur la géométrie du "plateau de jeu". Dans un premier temps, on calcule le rond jaune le plus éloigné de 
+    # pacman au sens de la distance de Manhattan, que l'on notera P1. Ensuite, on divise le plateau en 4 cadres, les cadres étant délimités par la position 
+    # de pacman. (Comme si on traçait un trait vertical et un trait horizontal là où se situe pacman). On concentre alors la deuxième partie de la recherche 
+    # dans le cadre opposé à celui où se situe P1. On calcule alors le point le plus éloigné de pacman dans ce cadre là. On ajoute alors les deux distances
+    # calculées pour obtenir le résultat final de cette heuristique. L'idée étant que pour terminer le niveau, pacman va devoir à la fois manger les deux ronds
+    # mais les deux ronds étant situés dans des cadres opposés, pacman va devoir au moins parcourir la distance ici calculée pour terminer le niveau.
+
     import sys 
-                            
+
     foodCoordoList = foodGrid.asList() #récupérer les coordonnées des ronds jaunes
     distance = 0 
-    minCoordo = (-1,-1) #coordonnée du rond jaune le plus proche de pacman
+    minCoordo = (-1,-1) # coordonnée du rond jaune le plus proche de pacman
+    maxCoordo = (-1,-1) # coordonnée du rond jaune le plus éloigné de pacman
     minDist = sys.maxsize #placeholder pour plus petite distance entre un rond jaune et pacman
+    maxDist = 0 #placeholder pour plus grand distance entre un rond jaune et pacman
+    maxDist_opposite = 0 #placeholder pour plus grand distance entre un rond jaune et pacman dans le cadre opposé
 
-    if foodCoordoList == []:
-        return 0
-    
-    else:
-        #permet de trouver le rond jaune le plus proche de pacman. Stocke la distance et les coordonnées
-        for food in foodCoordoList:
+
+    if len(foodCoordoList) > 0:
+        ## Heuristique 1 : dist(pacman, point le plus proche) + dist entre le point le plus proche et point le plus éloigné de lui
+        
+        for food in foodCoordoList: #permet de trouver le rond jaune le plus proche et le plus éloigné de pacman. Stocke la distance et les coordonnées
             disman = (util.manhattanDistance(position, food))
             if disman < minDist:
                 minDist = disman
                 minCoordo = food
+            if disman > maxDist:
+                maxDist = disman
+                maxCoordo = food
 
         #permet de trouver le rond jaune le plus éloigné du rond jaune identifié plus tôt
         for food in foodCoordoList:
@@ -553,8 +568,32 @@ def foodHeuristic(state, problem: FoodSearchProblem):
             if distanceMan > distance:
                 distance = distanceMan
 
-        return minDist + distance
-    
-    
+        heuristique_1 =  minDist + distance
 
-    
+        ## Heuristique 2 : dist(pacman, point le plus éloigné) + dist(pacman, point le plus éloigné dans le cadre opposé)
+
+        opposite_foodCoordoList = []  ## Tri pour garder seulement les points dans le cadre opposé
+        if maxCoordo[0] > position[0] and maxCoordo[1] > position[1]:
+            opposite_foodCoordoList = [food for food in foodCoordoList if (food[0] < position[0] or food[1] < position[1])]
+        if maxCoordo[0] > position[0] and maxCoordo[1] < position[1]:
+            opposite_foodCoordoList = [food for food in foodCoordoList if food[0] < position[0] or food[1] > position[1]]
+        if maxCoordo[0] < position[0] and maxCoordo[1] < position[1]:
+            opposite_foodCoordoList = [food for food in foodCoordoList if food[0] > position[0] or food[1] > position[1]]
+        if maxCoordo[0] < position[0] and maxCoordo[1] > position[1]:
+            opposite_foodCoordoList = [food for food in foodCoordoList if food[0] > position[0] or food[1] < position[1]]
+            
+        ## Recherche de la distance max dans le cadre opposé
+        if len(opposite_foodCoordoList) > 0:
+            for food in opposite_foodCoordoList:
+                    disman = (util.manhattanDistance(position, food))
+                    if disman > maxDist_opposite:
+                        maxDist_opposite = disman
+
+        heuristique_2 = maxDist_opposite + maxDist ## Addition des deux distances, à la fois celle entre pacman et le point le plus éloigné puis celle
+                                                                                    ## entre pacman et le point le plus éloigné dans le cadre opposé.
+        r = max(heuristique_1, heuristique_2)
+        
+        return r
+    else:
+
+        return 0
