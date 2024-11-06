@@ -12,48 +12,36 @@ def generate_sol(solution, key, new_slot):
     return new_sol
 
 
-## Return first upgrading neighbor, if there is not, return a valid solution (possibly worst than the initial one)
-
-def generate_neighbor(schedule, solution, key, searching_range):
-    nb_of_slots = max(solution.values())
-    if searching_range == 0: 
-        possible_new_val = list( range( 1, solution[key] ) ) 
-    else: 
-        possible_new_val = list( range( solution[key] - searching_range, solution[key] ) ) 
-    solution_mem = dict()
+def evaluate_sol(solution): 
+    return ( sum( list(solution.values()) ) )
     
-    if len(possible_new_val)>0:
-        c = random.choice(possible_new_val)
-        candidate_sol = generate_sol(solution, key, c)
-        try:
-            schedule.verify_solution(candidate_sol)
 
-            keys_associated_valk = [key for key, value in candidate_sol.items() if value == solution[key]]
-            if len(keys_associated_valk) == 0: 
-                number_of_slots -= 1
-                keys_associated_valkp = [key for key, value in candidate_sol.items() if value > solution[key]]
-                for k in keys_associated_valkp: 
-                    candidate_sol[k] -=1
-                
-            candidate_value = max(candidate_sol.values())
-            if candidate_value <= nb_of_slots: 
-                return candidate_sol, candidate_value
-            else: 
-                return dict(), 0
-        except AssertionError: 
-            return dict(), 0
+def update_sol(solution, precedent_slot): 
+    if precedent_slot not in solution.values():
+        for k,v in solution.items(): 
+            if v > precedent_slot:
+                solution[k] = v-1
+    return solution
 
-        ## returning a randomly selected possible solution
-        nb_candidates = len(solution_mem)
-        if  nb_candidates > 0:
-            selected_sol, selected_value = random.choice(list(solution_mem.items()))
-            return dict(selected_sol), selected_value
-        else: 
-            return dict(), 0
-    else: 
-        return dict(), 0
-    
-    
+def generate_neighbor(schedule, solution, key, current_score): 
+    current_slot = solution[key]
+    new_slots_list = list(range(1,current_slot))
+    new_slots_list.reverse()
+    if new_slots_list: 
+        for slot in new_slots_list: 
+            candidate_sol = generate_sol(solution, key, slot)
+            try: 
+                schedule.verify_solution(candidate_sol)
+                candidate_sol = update_sol(candidate_sol, current_slot)
+                candidate_score = evaluate_sol(candidate_sol)
+                if candidate_score < current_score:
+                    return candidate_sol, candidate_score
+            except AssertionError: 
+                pass
+        
+    ## we didn't found a better solution
+    return dict(), 0
+
 
 
 def solve(schedule : Schedule):
@@ -63,57 +51,44 @@ def solve(schedule : Schedule):
     :return: a list of tuples of the form (c,t) where c is a course and t a time slot. 
     """
     
-    nb_restarts = 100
-    shuffle_solutions = dict()
-    slot_lists = list(range( 1, len(schedule.course_list)+1 ))
-    best_value = len(slot_lists)
-    if best_value < 100: 
-        searching_range = 0
-    else:
-        searching_range = round(0.1*best_value)
-    for res in range(nb_restarts):
-        print("restart ", res)
+    # naive and first solution
+    solution = dict()
+    time_slot_idx = 1
+    for c in schedule.course_list:
 
-        ## we create a naive first solution
-        random.shuffle(slot_lists)
+        assignation = time_slot_idx
+        solution[c] = assignation
+        time_slot_idx += 1
 
-        solution = dict()
-        for s, c in enumerate(schedule.course_list):
-            solution[c] = slot_lists[s]
+    current_score = evaluate_sol(solution)
+    ## Local search algorithm
 
-        ## local search algorithm
+    keys_not_placed = list(solution.keys())
 
-        flag = -1
-        max_iter = 1000
-        max_reroll = 5
-        iter_k = 0
- 
-        keys = solution.keys()
-
-        while flag < 0: 
-            reroll = True
-            reroll_number = 0
-            while reroll:
-                selected_key = random.choice(list(keys)) 
-                returned_sol, returned_value = generate_neighbor(schedule, solution, selected_key, searching_range)
-
-                reroll_number += 1
-                reroll = reroll and (reroll_number<max_reroll) and (returned_value==0)
-
-            if returned_value == 0: 
-                print("Nombre de rerolls insuffisant")
-                flag = 1
-
-            else: 
-                # by construction, here a neighbor solution cannot downgrade the solution
-                solution = returned_sol
-                best_value = returned_value
-                
-                ## convergence
-                iter_k +=1 
-                if iter_k >= max_iter: 
-                    flag = 0
-
-        shuffle_solutions[tuple(solution.items())] = best_value
+    max_iter = 30000
+    iter = 0
+    flags = -1
+    while flags < 0: 
+        selected_key = random.choice(keys_not_placed)
+        selected_sol, selected_score = generate_neighbor(schedule, solution, selected_key, current_score)
         
-    return dict(min(shuffle_solutions, key=shuffle_solutions.get))
+        iter +=1
+        if iter >= max_iter: 
+            flags = 0
+
+        if selected_score == 0: 
+            keys_not_placed.remove(selected_key) ## the course cannot be placed in a better slot
+            if not keys_not_placed:
+                flags = 1
+        else: 
+            solution = selected_sol
+            current_score = selected_score
+        
+    if flags == 0: 
+        print("nombre maximum d'itérations atteint")
+    else: 
+        print("Toutes les clés ont été placées")
+
+    return solution
+
+    
